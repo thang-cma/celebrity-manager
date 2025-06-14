@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Bảng xếp hạng nghệ sĩ nổi bật</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-purple-50 min-h-screen text-gray-800">
+  <div class="container mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold text-purple-700 mb-6">Bảng xếp hạng ( Dựa trên số lượng yêu thích )</h1>
+    <div id="ranking-list" class="space-y-4"></div>
+    <a href="index.html" class="inline-block mt-6 text-purple-600 hover:underline">&larr; Về trang chủ</a>
+  </div>
+
+  <script>
+    async function loadRank() {
+      try {
+        const res = await fetch('/api/celebs/rank');
+        const data = await res.json();
+
+        const container = document.getElementById('ranking-list');
+        container.innerHTML = data.map((celeb, index) => {
+          const avgRating = celeb.ratingCount > 0
+            ? (celeb.totalRating / celeb.ratingCount).toFixed(1)
+            : '0.0';
+
+          return `
+            <div class="flex items-center gap-4 bg-white p-4 rounded shadow">
+              <span class="text-xl font-bold text-purple-800 w-6">${index + 1}</span>
+              <img src="${celeb.image}" alt="${celeb.name}" class="w-16 h-16 rounded object-cover">
+              <div>
+                <h3 class="text-lg font-semibold">${celeb.name}</h3>
+                <p class="text-sm text-gray-600">${Array.isArray(celeb.profession) ? celeb.profession.join(', ') : celeb.profession}</p>
+                <p class="text-sm text-pink-600 font-medium">❤️ ${celeb.favoritesCount || 0} lượt yêu thích</p>
+                <p class="text-sm text-yellow-600 font-medium">⭐ Đánh giá: ${avgRating} / 5</p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Lỗi khi tải bảng xếp hạng:', err);
+        document.getElementById('ranking-list').innerHTML =
+          '<p class="text-red-500">Không thể tải bảng xếp hạng.</p>';
+      }
+    }
+
+    loadRank();
+  </script>
+</body>
+</html>

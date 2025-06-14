@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang chủ HQKT</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-100 to-white min-h-screen font-sans">
+<header class="bg-white shadow-md sticky top-0 z-50">
+  <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <a href="index.html" class="text-3xl font-bold text-purple-700">HQKT</a>
+    
+    <div class="flex items-center gap-6">
+      <ul class="flex gap-6 text-purple-800 font-medium text-lg">
+        <li><a href="ca-si.html" class="hover:text-purple-600">Ca sĩ</a></li>
+        <li><a href="dien-vien.html" class="hover:text-purple-600">Diễn viên</a></li>
+        <li><a href="cau-thu.html" class="hover:text-purple-600">Cầu thủ</a></li>
+      </ul>
+     
+      <form action="#" method="GET" class="relative">
+        <input
+          type="text"
+          name="search"
+          placeholder="Tìm kiếm nghệ sĩ..."
+          class="px-4 py-2 border border-purple-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+        <button type="submit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-700 hover:text-purple-900">
+          🔍
+        </button>
+      </form>
+    </div>
+  </div>
+</header>
+
+
+  <section class="text-center py-16">
+    <h2 class="text-4xl font-bold text-purple-800 mb-4">Chào mừng đến với HQKT</h2>
+    <p class="text-lg text-gray-700">Khám phá tiểu sử chi tiết của các ca sĩ, diễn viên và cầu thủ nổi tiếng</p>
+  </section>
+
+  <section class="container mx-auto px-4 pb-16">
+    <div class="grid md:grid-cols-3 gap-8">
+
+    <a href="ronaldo.html" class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition">
+        <img src="./images/ronaldo.jfif" class="w-full h-64 object-cover" alt="Cristiano Ronaldo">
+        <div class="p-4">
+          <h3 class="text-xl font-semibold text-purple-700">Cristiano Ronaldo</h3>
+          <p class="text-sm text-gray-600">Cầu thủ</p>
+        </div>
+      </a>
+      <a href="messi.html" class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition">
+        <img src="./images/messi.jpg" class="w-full h-64 object-cover" alt="Lionel Messi">
+        <div class="p-4">
+          <h3 class="text-xl font-semibold text-purple-700">Lionel Messi</h3>
+          <p class="text-sm text-gray-600">Cầu thủ</p>
+        </div>
+      </a>
+      <a href="haaland.html" class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition">
+        <img src="./images/Haaland.jfif" class="w-full h-64 object-cover" alt="Erling Haaland">
+        <div class="p-4">
+          <h3 class="text-xl font-semibold text-purple-700">Erling Haaland</h3>
+          <p class="text-sm text-gray-600">Cầu thủ</p>
+        </div>
+      </a>
+      <a href="pele.html" class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition">
+        <img src="./images/pele.jpg" class="w-full h-64 object-cover" alt="Pele">
+        <div class="p-4">
+          <h3 class="text-xl font-semibold text-purple-700">Pele</h3>
+          <p class="text-sm text-gray-600">Cầu thủ</p>
+        </div>
+      </a>
+      <a href="ramos.html" class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition">
+        <img src="./images/ramos.jpg" class="w-full h-64 object-cover" alt="Sergio Ramos">
+        <div class="p-4">
+          <h3 class="text-xl font-semibold text-purple-700">Sergio Ramos</h3>
+          <p class="text-sm text-gray-600">Cầu thủ</p>
+        </div>
+      </a>
+    </div>
+  </section>
+   <script>
+  const searchInput = document.querySelector('input[name="search"]');
+  const cards = document.querySelectorAll('section .grid > a');
+
+  searchInput.addEventListener('input', () => {
+    const keyword = searchInput.value.toLowerCase().trim();
+    cards.forEach(card => {
+      const name = card.querySelector('h3')?.textContent.toLowerCase() || "";
+      if (name.includes(keyword)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+</script>
+</body>
+</html>

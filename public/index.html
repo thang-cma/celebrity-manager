@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Starfolio</title>
+  <!-- Tailwind config must appear before the CDN script -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'fade-in': 'fadeIn 0.8s ease-out forwards',
+            'slide-in': 'slideIn 0.8s ease-out forwards'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: 0 },
+              '100%': { opacity: 1 }
+            },
+            slideIn: {
+              '0%': { opacity: 0, transform: 'translateY(20px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com?plugins=line-clamp"></script>
+  <style>
+@keyframes slide-up {
+  0% {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+.opacity-0-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+}
+</style>
+
+  <style>
+@keyframes slide-up {
+  0% {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+.opacity-0-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+}
+</style>
+
+  <style>
+@keyframes slide-in {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.animate-slide-in {
+  animation: slide-in 0.6s ease-out forwards;
+}
+</style>
+
+</head>
+
+<body class="bg-gradient-to-br from-purple-100 to-white min-h-screen font-sans">
+  <!-- Header -->
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="index.html" class="text-3xl font-bold text-purple-700">Trang chủ</a>
+      <div class="flex items-center gap-6">
+        <ul class="flex gap-6 text-purple-800 font-medium text-lg">
+          <li><a href="rank.html" class="hover:text-purple-600">📊 Xếp hạng</a></li>
+          <li class="relative">
+  <button onclick="toggleDropdown()" class="hover:text-purple-600 font-medium text-lg flex items-center gap-1">
+    🎭 Nghề nghiệp ▾
+  </button>
+  <ul id="profession-dropdown" class="absolute left-0 mt-2 hidden flex-col bg-white shadow-md rounded w-44 z-50">
+    <li><a href="index.html?profession=ca sĩ" class="px-4 py-2 hover:bg-purple-100 text-purple-700 block">Ca sĩ</a></li>
+    <li><a href="index.html?profession=diễn viên" class="px-4 py-2 hover:bg-purple-100 text-purple-700 block">Diễn viên</a></li>
+    <li><a href="index.html?profession=cầu thủ" class="px-4 py-2 hover:bg-purple-100 text-purple-700 block">Cầu thủ</a></li>
+  </ul>
+</li>
+
+          <li>
+            <a href="favorites.html" class="flex items-center gap-2 text-pink-600 font-semibold hover:text-pink-500">
+              ❤️ <span>Yêu thích</span>
+            </a>
+          </li>
+        </ul>
+        <form action="#" method="GET" class="relative">
+          <input
+            type="text"
+            id="search-input"
+            name="search"
+            placeholder="Tìm kiếm nghệ sĩ..."
+            class="px-4 py-2 border border-purple-300 rounded-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <button
+            type="submit"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-purple-700 hover:text-purple-900"
+          >
+            🔍
+          </button>
+        </form>
+        <div class="flex items-center gap-4" id="admin-bar" style="display: none;">
+          <span id="welcome-msg" class="text-purple-700 font-semibold"></span>
+          <button onclick="logout()" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Đăng xuất</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Giới thiệu -->
+  <section class="text-center py-10">
+    <h2 class="text-4xl font-bold text-purple-800 mb-4">Chào mừng đến với Starfolio</h2>
+    <p class="text-lg text-gray-700">
+"Khám phá sự nghiệp và dấu ấn của những người bạn ngưỡng mộ."
+    </p>
+  </section>
+
+<div class="container mx-auto px-4 mb-6 flex items-center gap-4 relative">
+  <!-- Dropdown trái -->
+  <select id="sort-select" class="border px-4 py-2 rounded shadow text-purple-700">
+    <option value="">-- Sắp xếp theo tên --</option>
+    <option value="az">A → Z</option>
+    <option value="za">Z → A</option>
+  </select>
+
+  <!-- ✅ Nút thêm căn giữa toàn khối -->
+  <div class="admin-only hidden absolute left-1/2 transform -translate-x-1/2" id="admin-add-btn">
+    <button onclick="openAddForm()" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 hover:animate-wiggle text-lg font-semibold shadow">
+      ➕ Thêm người nổi tiếng
+    </button>
+  </div>
+</div>
+
+
+
+
+  <section class="container mx-auto px-4 pb-16">
+    <div id="celebs-container" class="grid md:grid-cols-3 gap-8"></div>
+  </section>
+
+  <!-- Form popup thêm người nổi tiếng -->
+  <div id="add-celeb-form" style="display: none;" class="fixed top-20 left-1/2 -translate-x-1/2 bg-white p-4 rounded shadow-lg z-50 border w-96">
+    <h2 class="text-xl font-bold mb-2">Thêm người nổi tiếng</h2>
+    <input type="text" id="celeb-name" placeholder="Tên" class="border p-2 mb-2 w-full" />
+    <input type="text" id="celeb-role" placeholder="Ví dụ: Ca sĩ, Diễn viên" class="border p-2 mb-2 w-full" />
+    <textarea id="celeb-description" rows="5" placeholder="Mô tả (ngày sinh, quốc tịch...)" class="border p-2 mb-2 w-full resize-y"></textarea>
+    <input type="file" id="celeb-image" class="border p-2 mb-2 w-full" accept="image/*" />
+    <div class="flex justify-end gap-2">
+      <button onclick="submitCeleb()" class="bg-green-500 text-white px-4 py-2 rounded">Lưu</button>
+      <button onclick="closeAddForm()" class="bg-gray-300 px-4 py-2 rounded">Hủy</button>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const token = localStorage.getItem('token');
+    let isAdmin = false;
+
+    if (!token) {
+      window.location.href = 'login.html';
+    } else {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      isAdmin = (payload.role || '').toLowerCase() === 'admin';
+      window.isAdmin = isAdmin;
+
+      document.getElementById('welcome-msg').textContent = `Xin chào, ${payload.username}`;
+      document.getElementById('admin-bar').style.display = 'flex';
+
+      if (isAdmin) {
+        document.querySelectorAll('.admin-only').forEach(el => {
+          el.classList.remove('hidden');
+          el.style.display = '';
+        });
+      } else {
+        document.querySelectorAll('.admin-only').forEach(el => el.remove());
+      }
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const professionFilter = params.get('profession') || '';
+    loadCelebs('', professionFilter);
+    document.getElementById('sort-select').addEventListener('change', () => {
+  const keyword = document.getElementById('search-input').value.trim();
+  loadCelebs(keyword, professionFilter);
+});
+
+    document.querySelector('form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const keyword = document.getElementById('search-input').value.trim();
+      loadCelebs(keyword, professionFilter);
+    });
+
+    async function loadCelebs(keyword = '', profession = '') {
+      const res = await fetch('/api/celebs');
+      let celebs = await res.json();
+
+      if (keyword) {
+        celebs = celebs.filter(c =>
+          c.name.toLowerCase().includes(keyword.toLowerCase())
+        );
+      }
+
+      if (profession) {
+        celebs = celebs.filter(c => {
+          if (Array.isArray(c.profession)) {
+            return c.profession.some(p => p.toLowerCase() === profession.toLowerCase());
+          }
+          return (c.profession || '').toLowerCase() === profession.toLowerCase();
+        });
+      }
+// ⭐ Sắp xếp theo lựa chọn dropdown
+const sortType = document.getElementById('sort-select')?.value;
+if (sortType === 'az') celebs.sort((a, b) => a.name.localeCompare(b.name));
+if (sortType === 'za') celebs.sort((a, b) => b.name.localeCompare(a.name));
+
+      const container = document.getElementById('celebs-container');
+      container.innerHTML = celebs
+        .map((c, idx) => `
+<div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transform hover:scale-105 transition duration-300 opacity-0-scroll scroll-item" data-delay="${(idx * 0.1).toFixed(1)}s">
+            <a href="detail.html?id=${c._id}">
+              <img src="${c.image || 'https://via.placeholder.com/400x300?text=No+Image'}" class="w-full h-64 object-cover" />
+              <div class="p-4">
+                <h3 class="text-xl font-semibold text-purple-700">${c.name || 'Không rõ'}</h3>
+                <p class="text-sm text-gray-600">${(Array.isArray(c.profession) ? c.profession.join(', ') : c.profession) || 'Không rõ'}</p>
+                <p class="text-sm text-gray-500 line-clamp-6">${c.description || ''}</p>
+              </div>
+            </a>
+            ${
+              isAdmin
+                ? `<button onclick="deleteCeleb('${c._id}')" class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded">🗑</button>`
+                : ''
+            }
+          </div>`)
+        .join('');
+        observeScrollAnimations(); // 👈 Thêm dòng này
+
+    }
+
+    async function deleteCeleb(id) {
+      if (!confirm('Bạn có chắc chắn muốn xoá?')) return;
+      const res = await fetch(`/api/celebs/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      if (res.ok) {
+        alert('Đã xoá!');
+        location.reload();
+      } else {
+        alert('Xoá thất bại!');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    }
+
+    function openAddForm() {
+      document.getElementById('add-celeb-form').style.display = 'block';
+    }
+
+    function closeAddForm() {
+      document.getElementById('add-celeb-form').style.display = 'none';
+    }
+
+    async function submitCeleb() {
+      const name = document.getElementById('celeb-name').value;
+      const roleInput = document.getElementById('celeb-role').value;
+      const role = roleInput.split(',').map(r => r.trim());
+      const description = document.getElementById('celeb-description').value;
+      const imageFile = document.getElementById('celeb-image').files[0];
+
+      if (!name || !role || !imageFile) {
+        alert('Vui lòng điền đầy đủ thông tin và chọn ảnh.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('profession', JSON.stringify(role));
+      formData.append('description', description);
+      formData.append('image', imageFile);
+
+      try {
+        const response = await fetch('http://localhost:3000/api/celebs', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + token },
+          body: formData
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          alert('Thêm thành công!');
+          closeAddForm();
+          location.reload();
+        } else {
+          alert(result.message || 'Thêm thất bại!');
+        }
+      } catch (err) {
+        alert('Lỗi khi gửi dữ liệu!');
+        console.error(err);
+      }
+    }
+    function observeScrollAnimations() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const delay = el.dataset.delay || '0s';
+        el.style.animationDelay = delay;
+        el.classList.add('animate-slide-up');
+        el.classList.remove('opacity-0-scroll');
+        observer.unobserve(el);
+      }
+    });
+  }, {
+    threshold: 0.1
+  });
+
+  document.querySelectorAll('.scroll-item').forEach(el => observer.observe(el));
+}
+
+  </script>
+ <footer class="bg-purple-100 text-center py-8 mt-12 text-sm text-purple-700">
+  <p class="font-semibold text-purple-800 text-base mb-2">📬 Liên hệ với nhóm phát triển</p>
+  <p>Email: <a href="mailto:hqkt.group@gmail.com" class="text-purple-900 hover:underline">hqkt.group@gmail.com</a></p>
+  <p>Facebook: <a href="https://facebook.com/hqktgroup" target="_blank" class="text-purple-900 hover:underline">facebook.com/hqktgroup</a></p>
+  <p>📍 Đại học Phenikaa, Hà Nội</p>
+
+  <hr class="my-4 border-purple-300 w-2/3 mx-auto" />
+
+  <p>🌟 Dự án: <span class="font-semibold">Hệ thống quản lý người nổi tiếng</span></p>
+  <p>💻 Nhóm thực hiện: HQKT - Đại học Phenikaa</p>
+  <p>📅 Năm học: 2024 - 2025</p>
+</footer>
+<script>
+  function toggleDropdown() {
+    const dropdown = document.getElementById('profession-dropdown');
+    dropdown.classList.toggle('hidden');
+  }
+
+  // Ẩn dropdown khi click ra ngoài
+  document.addEventListener('click', function (e) {
+    const btn = e.target.closest('button');
+    const dropdown = document.getElementById('profession-dropdown');
+    if (!e.target.closest('li') || e.target.closest('li').querySelector('ul')) return;
+    if (!e.target.closest('li')?.contains(dropdown)) {
+      dropdown?.classList.add('hidden');
+    }
+  });
+</script>
+
+
+</body>
+</html>

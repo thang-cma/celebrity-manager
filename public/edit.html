@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chỉnh sửa người nổi tiếng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-purple-50 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
+    <h1 class="text-2xl font-bold text-purple-700 mb-4 text-center">✏️ Sửa người nổi tiếng</h1>
+
+    <input type="text" id="name" placeholder="Tên" class="w-full mb-2 px-3 py-2 border rounded" />
+    <input type="text" id="profession" placeholder="Nghề nghiệp" class="w-full mb-2 px-3 py-2 border rounded" />
+    <textarea id="description" placeholder="Mô tả chi tiết" class="w-full mb-2 px-3 py-2 border rounded"></textarea>
+
+    <input type="text" id="image" placeholder="Link ảnh (nếu muốn đổi)" class="w-full mb-4 px-3 py-2 border rounded" />
+
+    <div class="flex justify-between">
+      <a href="index.html" class="text-gray-600 hover:underline">&larr; Quay lại</a>
+      <button onclick="updateCeleb()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Lưu thay đổi</button>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    async function loadData() {
+      const res = await fetch('http://localhost:3000/api/celebs');
+      const celebs = await res.json();
+      const celeb = celebs.find(c => c._id === id);
+      if (!celeb) return alert('Không tìm thấy người nổi tiếng');
+
+      document.getElementById('name').value = celeb.name;
+      document.getElementById('profession').value = celeb.profession;
+      document.getElementById('description').value = celeb.description;
+      document.getElementById('image').value = celeb.image;
+    }
+
+    async function updateCeleb() {
+      const token = localStorage.getItem('token');
+      const updated = {
+        name: document.getElementById('name').value.trim(),
+        profession: document.getElementById('profession').value.trim(),
+        description: document.getElementById('description').value.trim(),
+        image: document.getElementById('image').value.trim()
+      };
+
+      const res = await fetch(`http://localhost:3000/api/celebs/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify(updated)
+      });
+
+      if (res.ok) {
+        alert('Đã cập nhật!');
+        window.location.href = 'index.html';
+      } else {
+        alert('Cập nhật thất bại.');
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>

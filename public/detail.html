@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi tiết người nổi tiếng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen text-gray-800 bg-[url('./bg-soft.png')] bg-cover bg-center bg-fixed bg-no-repeat">
+  <div class="container mx-auto px-4 py-12">
+    <a href="index.html" class="text-purple-700 font-semibold hover:underline">&larr; Quay lại Trang Chủ</a>
+    <div id="celeb-detail" class="mt-8 animate-slide-in"></div>
+    <!-- Bình luận -->
+<div class="mt-12 px-4 md:px-0">
+  <h2 class="text-2xl font-semibold text-purple-800 mb-4">Bình luận</h2>
+  <textarea id="comment-input" class="w-full border rounded p-2" rows="3" placeholder="Nhập bình luận..."></textarea>
+  <button onclick="submitComment()" class="mt-2 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">Gửi</button>
+
+  <div id="comment-list" class="mt-6 space-y-4">
+    <!-- Danh sách bình luận sẽ hiển thị ở đây -->
+  </div>
+</div>
+
+  </div>
+
+  <script>
+    async function loadDetail() {
+      const celebId = new URLSearchParams(window.location.search).get('id');
+      const detailContainer = document.getElementById('celeb-detail');
+      const token = localStorage.getItem('token');
+
+      const [celebRes, meRes] = await Promise.all([
+        fetch('http://localhost:3000/api/celebs'),
+        token
+          ? fetch('http://localhost:3000/api/users/me', {
+              headers: { Authorization: 'Bearer ' + token }
+            }).then(r => r.ok ? r.json() : { ratings: [] })
+          : Promise.resolve({ ratings: [] })
+      ]);
+
+      const celebs = await celebRes.json();
+      const userRatings = meRes.ratings || [];
+      const celeb = celebs.find(c => c._id === celebId);
+      const ratedCeleb = userRatings.find(r => r.celeb === celebId);
+
+      if (!celeb) {
+        detailContainer.innerHTML = '<p class="text-red-500">Không tìm thấy người nổi tiếng.</p>';
+        return;
+      }
+
+      const average = celeb.ratingCount > 0 ? (celeb.totalRating / celeb.ratingCount) : 0;
+      const ratingStars = [1, 2, 3, 4, 5].map(i => {
+  if (ratedCeleb) {
+    return `<span data-value="${i}" class="star text-2xl ${i <= ratedCeleb.value ? 'text-yellow-400' : 'text-gray-400'}">★</span>`;
+  } else {
+    return `<span data-value="${i}" class="star cursor-pointer text-2xl text-gray-500 hover:text-yellow-400 transition-all">☆</span>`;
+  }
+}).join('');
+
+
+      detailContainer.innerHTML = `
+        <div class="flex flex-col md:flex-row gap-8 backdrop-blur-sm bg-white/30 p-6 rounded-lg shadow-lg">
+          <div class="md:w-1/3 w-full flex flex-col items-center">
+            <img src="${celeb.image}" class="w-full rounded object-cover max-h-[500px]" alt="${celeb.name}" />
+            <div id="rating-stars" class="mt-4 flex gap-1">${ratingStars}</div>
+            <div id="fav-btn-container" class="mt-4"></div>
+          </div>
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold text-purple-800 mb-2">${celeb.name}</h1>
+            <p class="text-lg font-medium text-gray-600 mb-4">${celeb.profession}</p>
+            <p class="text-gray-700 leading-relaxed whitespace-pre-line">${celeb.description}</p>
+            <div id="edit-btn-container" class="mt-4"></div>
+          </div>
+        </div>
+      `;
+
+      // Đánh giá
+      if (!ratedCeleb) {
+        document.querySelectorAll('.star').forEach(star => {
+          star.addEventListener('click', async () => {
+            if (!token) return alert('Bạn cần đăng nhập để đánh giá.');
+            const value = parseInt(star.dataset.value);
+            const res = await fetch(`http://localhost:3000/api/celebs/${celebId}/rate`, {
+              method: 'POST',
+              headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ rating: value })
+            });
+            const result = await res.json();
+            if (res.ok) {
+              alert('Cảm ơn bạn đã đánh giá!');
+              location.reload();
+            } else {
+              alert(result.message || 'Không thể gửi đánh giá.');
+            }
+          });
+        });
+      }
+
+      // Yêu thích
+      let isFav = false;
+      try {
+        const favRes = await fetch('http://localhost:3000/api/users/favorites', {
+          headers: { Authorization: 'Bearer ' + token }
+        });
+        const favs = await favRes.json();
+        isFav = favs.some(c => c._id === celebId);
+      } catch (err) {
+        console.warn('Không kiểm tra được trạng thái yêu thích:', err);
+      }
+
+      const favBtn = document.createElement('button');
+      favBtn.innerHTML = isFav ? '❤️ Đã yêu thích' : '🤍 Thêm vào yêu thích';
+      favBtn.className = 'px-4 py-2 bg-pink-500 text-white rounded hover:bg-pink-600 hover:animate-bounce';
+      favBtn.onclick = async () => {
+        if (!token) return alert('Bạn cần đăng nhập trước');
+        const res = await fetch(`http://localhost:3000/api/users/favorites/${encodeURIComponent(celebId)}`, {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + token }
+        });
+        if (res.ok) {
+          isFav = !isFav;
+          favBtn.innerHTML = isFav ? '❤️ Đã yêu thích' : '🤍 Thêm vào yêu thích';
+        } else {
+          alert('Không thể cập nhật yêu thích');
+        }
+      };
+      document.getElementById('fav-btn-container').appendChild(favBtn);
+
+      // Admin: nút sửa
+      try {
+        const payload = token && JSON.parse(atob(token.split('.')[1]));
+        if (payload?.role === 'admin') {
+          const editBtn = document.createElement('a');
+          editBtn.href = `edit.html?id=${celebId}`;
+          editBtn.textContent = '✏️ Sửa thông tin';
+          editBtn.className = 'inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-2';
+          document.getElementById('edit-btn-container').appendChild(editBtn);
+        }
+      } catch {}
+    }
+
+    loadDetail();
+    const comments = [];
+
+function submitComment() {
+  const input = document.getElementById('comment-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const time = new Date().toLocaleString();
+  comments.unshift({ text, time });
+  input.value = '';
+  renderComments();
+}
+
+function renderComments() {
+  const list = document.getElementById('comment-list');
+  list.innerHTML = comments.map(c => `
+    <div class="bg-white p-3 rounded shadow border">
+      <p class="text-gray-800 text-sm">${c.text}</p>
+      <p class="text-gray-400 text-xs mt-1">${c.time}</p>
+    </div>
+  `).join('');
+}
+
+  </script>
+</body>
+</html>

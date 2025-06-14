@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Đăng ký tài khoản</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #d0bfff, #f5ecff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .register-box {
+      background: white;
+      padding: 32px 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .register-box h2 {
+      margin-bottom: 24px;
+      color: #6c2dc7;
+    }
+
+    .register-box input {
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .register-box input:focus {
+      outline: none;
+      border-color: #a66cff;
+    }
+
+    .register-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #6c2dc7;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .register-box button:hover {
+      background-color: #5a20ac;
+    }
+
+    .register-box p {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    .register-box a {
+      color: #6c2dc7;
+      text-decoration: none;
+    }
+
+    .register-box a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-box">
+    <h2>Đăng ký tài khoản</h2>
+    <form id="registerForm">
+      <input type="text" name="username" placeholder="Tên tài khoản" required>
+      <input type="password" name="password" placeholder="Mật khẩu" required>
+      <button type="submit">Đăng ký</button>
+    </form>
+    <p>Đã có tài khoản? <a href="login.html">Đăng nhập</a></p>
+  </div>
+
+  <script>
+    document.getElementById('registerForm')?.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        username: form.username.value,
+        password: form.password.value
+      };
+
+      const res = await fetch('/api/auth/register-public', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert('Đăng ký thành công! Mời bạn đăng nhập');
+        window.location.href = 'login.html';
+      } else {
+        const err = await res.json();
+        alert('Lỗi: ' + err.error);
+      }
+    });
+  </script>
+</body>
+</html>

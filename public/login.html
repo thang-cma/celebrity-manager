@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Đăng nhập - Quản lý Người Nổi Tiếng</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-purple-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded shadow-md w-full max-w-md space-y-4">
+    <h1 class="text-2xl font-bold text-center text-purple-700">Đăng nhập</h1>
+    <input 
+      type="text" 
+      id="username" 
+      placeholder="Tên đăng nhập" 
+      class="w-full px-4 py-2 border border-purple-300 rounded"
+    />
+    <input 
+      type="password" 
+      id="password" 
+      placeholder="Mật khẩu" 
+      class="w-full px-4 py-2 border border-purple-300 rounded"
+      onkeypress="if(event.key === 'Enter') login()"
+    />
+    <button onclick="login()" class="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700">
+      Đăng nhập
+    </button>
+    <p id="error" class="text-red-500 text-sm text-center hidden">Sai tên đăng nhập hoặc mật khẩu!</p>
+    <p style="margin-top: 10px; text-align: center; font-size: 14px;">
+  Chưa có tài khoản? <a href="register.html" style="color: purple; text-decoration: underline;">Đăng ký ngay</a>
+</p>
+  
+  </div>
+
+  <script>
+    async function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const error = document.getElementById('error');
+      error.classList.add('hidden');
+
+      if (!username || !password) {
+        error.textContent = "Vui lòng nhập đầy đủ tài khoản và mật khẩu.";
+        error.classList.remove('hidden');
+        return;
+      }
+
+      try {
+        const res = await fetch('http://localhost:3000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem('token', data.token);
+          window.location.href = 'index.html';
+        } else {
+          error.textContent = "Sai tên đăng nhập hoặc mật khẩu!";
+          error.classList.remove('hidden');
+        }
+      } catch (err) {
+        error.textContent = "Không thể kết nối tới máy chủ.";
+        error.classList.remove('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
